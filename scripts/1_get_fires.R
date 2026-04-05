@@ -1,6 +1,7 @@
 library(tidyverse)
 library(sf)
 library(terra)
+source('scripts/functions/convert_case.R')
 
 
 ## -------------------------------- Global Vars -------------------------------- ##
@@ -39,15 +40,16 @@ ca_2020_fires <- st_read(mtbs_shp) %>%
   st_as_sf()
 
 fires2study <- c('CREEK', 'AUGUST COMPLEX', 'NORTH COMPLEX')
-ca_2020_fires2write <- ca_2020_fires %>%
-  filter(BurnBndAc > 200000) %>%  # filter for large fires only (200k acres = 80k ha)
+fires2write <- ca_2020_fires %>%
+  # filter(BurnBndAc > 200000) %>%  # filter for large fires only (200k acres = 80k ha)
+  filter(Incid_Name %in% fires2study) %>%
+  mutate(Incid_Name = convert_case(Incid_Name, case = 'title')) %>%
+  select(Event_ID, Incid_Name, BurnBndAc, Ig_Date) %>%
+  st_simplify(dTolerance = 1, preserveTopology = TRUE) %>%  # Reduce polygon complexity
   rowwise() %>%
-  mutate(bbox = paste(
-    round(st_bbox(geometry)[c("xmin","ymin","xmax","ymax")], 2),
-    collapse = ",")) %>%
-  ungroup() %>%
-  # Get the 3 most interesting fires
-  filter(Incid_Name %in% fires2study)
-st_bbox(ca_2020_fires2write)
+  mutate(bbox = paste(round(st_bbox(geometry)[c("xmin","ymin","xmax","ymax")], 2),
+                      collapse = ",")) %>%
+  ungroup()
+st_bbox(fires2write)
 
-st_write(ca_2020_fires2write, file.path(fire_out_folder, 'ca_2020_fires.shp'), delete_dsn = TRUE)
+st_write(fires2write, file.path(fire_out_folder, 'ca_2020_fires.shp'), delete_dsn = TRUE)
