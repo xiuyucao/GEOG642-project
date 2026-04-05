@@ -45,5 +45,6 @@ ca_2020_fires2write <- ca_2020_fires %>%
     round(st_bbox(geometry)[c("xmin","ymin","xmax","ymax")], 2),
     collapse = ",")) %>%
   ungroup()
+st_bbox(ca_2020_fires2write)
 
 st_write(ca_2020_fires2write, file.path(fire_out_folder, 'ca_2020_fires.shp'), delete_dsn = TRUE)
