@@ -80,7 +80,7 @@ gedi_files <- list.files(gedi_folder, full.names=T)
 gedi_files <- gedi_files[grepl('.csv$', gedi_files)]
 
 
-# -------------------------------- Data Read-in -------------------------------- #
+# ---------------------------------- Get Data ---------------------------------- #
 # Get filtered L2 shots
 l2_shots0 <- get_l2_shots(gedi_folder, time = '0', write_shp = F)
 l2_shots1 <- get_l2_shots(gedi_folder, time = '1', write_shp = F)
