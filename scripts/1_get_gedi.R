@@ -72,15 +72,34 @@ get_l2a <- function(gedi_folder, shots2use, time = '0'){
 }
 
 
-# ------------------------------------ Paths ----------------------------------- #
-gedi_folder <- 'data/raw/gedi'
+get_l2b <- function(gedi_folder, shots2use, time = '0'){
+  time <- match.arg(time, c('0', '1', '2'))
+  
+  path2file <- file.path(gedi_folder, paste0('gedi_l2b_', time, '.csv'))
+  l2b <- read.csv(path2file, colClasses = c(shot_number = 'character'))
+  
+  # Get variables: cover, pai, num_detectedmodes, and fhd_normal
+  message(paste0('Getting metrics for L2B time ', time, '...'))
+  output <- shots2use %>%
+    left_join(l2b, by = 'shot_number') %>%
+    select(shot_number, cover, pai, num_detectedmodes, fhd_normal)
+  
+  output
+}
 
-# Take a look
+
+# ------------------------------------ Paths ----------------------------------- #
+# GEDI folder and take a look at the files inside
+gedi_folder <- 'data/raw/gedi'
 gedi_files <- list.files(gedi_folder, full.names=T)
 gedi_files <- gedi_files[grepl('.csv$', gedi_files)]
 
+# Output folder
+out_folder <- 'data/input/gedi'
+
 
 # ---------------------------------- Get Data ---------------------------------- #
+# ---------------------------------- Write clean L2 shots
 # Get filtered L2 shots
 l2_shots0 <- get_l2_shots(gedi_folder, time = '0', write_shp = F)
 l2_shots1 <- get_l2_shots(gedi_folder, time = '1', write_shp = F)
@@ -91,3 +110,15 @@ l2a0 <- get_l2a(gedi_folder, l2_shots0, time = '0')
 l2a1 <- get_l2a(gedi_folder, l2_shots1, time = '1')
 l2a2 <- get_l2a(gedi_folder, l2_shots2, time = '2')
 
+# Get L2B
+l2b0 <- get_l2b(gedi_folder, l2_shots0, time = '0')
+l2b1 <- get_l2b(gedi_folder, l2_shots1, time = '1')
+l2b2 <- get_l2b(gedi_folder, l2_shots2, time = '2')
+
+# Join and write l2 shots
+l2_0 <- left_join(l2a0, l2b0, by = 'shot_number')
+write_rds(l2_0, file.path(out_folder, 'l2_0.rds'), compress = 'xz')
+l2_1 <- left_join(l2a1, l2b1, by = 'shot_number')
+write_rds(l2_1, file.path(out_folder, 'l2_1.rds'), compress = 'xz')
+l2_2 <- left_join(l2a2, l2b2, by = 'shot_number')
+write_rds(l2_2, file.path(out_folder, 'l2_2.rds'), compress = 'xz')
