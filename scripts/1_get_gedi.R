@@ -66,7 +66,7 @@ get_l2a <- function(gedi_folder, shots2use, time = '0'){
     ) %>%
     unnest_wider(metrics) %>%
     ungroup() %>%
-    select(shot_number, rh25, rh50, rh75, rh98, re_below10m, aVDR, delta_time, lat, lon)
+    select(shot_number, rh25, rh50, rh75, rh98, re_below10m, aVDR, delta_time, lat, lon, elev_lowestmode)
   
   output
 }
@@ -88,6 +88,27 @@ get_l2b <- function(gedi_folder, shots2use, time = '0'){
 }
 
 
+get_l4a <- function(gedi_folder, l2_shots2use, time = '0'){
+  time <- match.arg(time, c('0', '1', '2'))
+  
+  path2file <- file.path(gedi_folder, paste0('gedi_l4a_', time, '.csv'))
+  l4a <- read.csv(path2file, colClasses = c(shot_number = 'character'))
+  
+  # Get AGBD variables
+  message(paste0('Getting metrics for L4A time ', time, '...'))
+  output <- l2_shots2use %>%
+    left_join(l4a, by = 'shot_number') %>%
+    filter(algorithm_run_flag == 1,
+           agbd != -9999,
+           l4_quality_flag == 1,
+           lcd_landsat_water_persistence < 10) %>%
+    filter(lcd_pft_class %in% c(1, 2, 3, 4, 5, 9)) %>%
+    select(shot_number, agbd, agbd_pi_lower, agbd_pi_upper, agbd_se, lat, lon, elev_lowestmode)
+  
+  output
+}
+
+
 # ------------------------------------ Paths ----------------------------------- #
 # GEDI folder and take a look at the files inside
 gedi_folder <- 'data/raw/gedi'
@@ -100,25 +121,14 @@ out_folder <- 'data/input/gedi'
 
 # ---------------------------------- Get Data ---------------------------------- #
 # ---------------------------------- Write clean L2 shots
-# Get filtered L2 shots
-l2_shots0 <- get_l2_shots(gedi_folder, time = '0', write_shp = F)
-l2_shots1 <- get_l2_shots(gedi_folder, time = '1', write_shp = F)
-l2_shots2 <- get_l2_shots(gedi_folder, time = '2', write_shp = F)
-
-# Get L2A
-l2a0 <- get_l2a(gedi_folder, l2_shots0, time = '0')
-l2a1 <- get_l2a(gedi_folder, l2_shots1, time = '1')
-l2a2 <- get_l2a(gedi_folder, l2_shots2, time = '2')
-
-# Get L2B
-l2b0 <- get_l2b(gedi_folder, l2_shots0, time = '0')
-l2b1 <- get_l2b(gedi_folder, l2_shots1, time = '1')
-l2b2 <- get_l2b(gedi_folder, l2_shots2, time = '2')
-
-# Join and write l2 shots
-l2_0 <- left_join(l2a0, l2b0, by = 'shot_number')
-write_rds(l2_0, file.path(out_folder, 'l2_0.rds'), compress = 'xz')
-l2_1 <- left_join(l2a1, l2b1, by = 'shot_number')
-write_rds(l2_1, file.path(out_folder, 'l2_1.rds'), compress = 'xz')
-l2_2 <- left_join(l2a2, l2b2, by = 'shot_number')
-write_rds(l2_2, file.path(out_folder, 'l2_2.rds'), compress = 'xz')
+for (t in c('0', '1', '2')) {
+  l2_shots <- get_l2_shots(gedi_folder, time = t)
+  l2a <- get_l2a(gedi_folder, l2_shots, time = t)
+  l2b <- get_l2b(gedi_folder, l2_shots, time = t)
+  
+  l2 <- left_join(l2a, l2b, by = 'shot_number')
+  l4a <- get_l4a(gedi_folder, l2_shots, time = t)
+  
+  write_rds(l2, file.path(out_folder, paste0('gedi_l2_', t, '.rds')), compress = 'xz')
+  write_rds(l4a, file.path(out_folder, paste0('gedi_l4a_', t, '.rds')), compress = 'xz')
+}
