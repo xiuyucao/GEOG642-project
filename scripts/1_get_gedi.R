@@ -2,6 +2,16 @@ library(tidyverse)
 library(sf)
 
 
+# ------------------------------------ Paths ----------------------------------- #
+# GEDI folder and take a look at the files inside
+gedi_folder <- 'data/raw/gedi'
+gedi_files <- list.files(gedi_folder, full.names=T)
+gedi_files <- gedi_files[grepl('.csv$', gedi_files)]
+
+# Output folder
+out_folder <- 'data/input/gedi'
+
+
 # ---------------------------------- Functions --------------------------------- #
 # L2A and L2B have same shots, L4A for 2025 currently is only a subset of L2A
 # Filter L2A and L2B shots using variables in L2B
@@ -107,16 +117,6 @@ get_l4a <- function(gedi_folder, l2_shots2use, time = '0'){
   
   output
 }
-
-
-# ------------------------------------ Paths ----------------------------------- #
-# GEDI folder and take a look at the files inside
-gedi_folder <- 'data/raw/gedi'
-gedi_files <- list.files(gedi_folder, full.names=T)
-gedi_files <- gedi_files[grepl('.csv$', gedi_files)]
-
-# Output folder
-out_folder <- 'data/input/gedi'
 
 
 # ---------------------------------- Get Data ---------------------------------- #
