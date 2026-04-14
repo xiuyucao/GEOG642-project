@@ -3,6 +3,13 @@ library(terra)
 library(sf)
 
 
+# ------------------------------------ Paths ----------------------------------- #
+gedi_folder          <- 'data/input/gedi'
+fire_perimeters_file <- 'data/input/fires/ca_2020_fires.shp'
+burn_severity_file   <- 'data/raw/fire/burn_severity.tif'
+output_folder        <- 'data/intermediate'
+
+
 # ---------------------------------- Functions --------------------------------- #
 # Load GEDI L2 and L4A from time 0, 1, 2 and filter to fire_buffer
 load_gedi <- function(prefix) {
@@ -53,13 +60,6 @@ add_fire_attrs <- function(pairs_sf, fire, control, burn_severity_binary) {
     mutate(zone = case_when(in_fire ~ 'fire', in_control ~ 'control', TRUE ~ NA_character_),
            burn_severity = severity)
 }
-
-
-# ------------------------------------ Paths ----------------------------------- #
-gedi_folder          <- 'data/input/gedi'
-fire_perimeters_file <- 'data/input/fires/ca_2020_fires.shp'
-burn_severity_file   <- 'data/raw/fire/burn_severity.tif'
-output_folder        <- 'data/intermediate'
 
 
 # ---------------------------------- Get Fire ---------------------------------- #
