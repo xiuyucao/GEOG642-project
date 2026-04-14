@@ -80,6 +80,10 @@ burn_severity_binary <- classify(burn_severity,
 l2_sf  <- load_gedi('gedi_l2_')
 l4a_sf <- load_gedi('gedi_l4a_')
 
+# Save filtered GEDI points for visualization
+bind_rows(l2_sf,  .id = 'time') %>% write_rds(file.path(output_folder, 'l2_shots_subset.rds'))
+bind_rows(l4a_sf, .id = 'time') %>% write_rds(file.path(output_folder, 'l4a_shots_subset.rds'))
+
 # Get pairs for each time combination
 for (combo in list(c('0', '1'), c('1', '2'), c('0', '2'))) {
   t_a <- combo[1]; t_b <- combo[2]
