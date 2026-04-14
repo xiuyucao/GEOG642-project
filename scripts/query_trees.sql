@@ -11,6 +11,7 @@ select
   t.TPA_UNADJ,
   t.DRYBIO_AG,
   t.DRYBIO_FOLIAGE,
+  t.SPCD,
   ppsa.EVALID
 
 from
