@@ -5,7 +5,7 @@ select
   t.CN as TREE_CN,
   t.PLT_CN,
   t.CONDID,
-  t.STATUSCD,
+  t.DIA,
   t.TPA_UNADJ,
   t.SPCD
 
@@ -14,4 +14,6 @@ from
   join PLOT p on t.PLT_CN = p.CN
 
 where
-  p.STATECD = 6 AND p.MEASYEAR > 2013
+  p.STATECD = 6 
+  AND p.MEASYEAR > 2013
+  AND t.STATUSCD = 1
