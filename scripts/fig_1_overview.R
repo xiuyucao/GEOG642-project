@@ -9,7 +9,7 @@ library(ggpubr)
 # ------------------------------------ Paths ----------------------------------- #
 gedi_folder <- 'data/input/gedi'
 fia_folder <- 'data/input/fia'
-fire_perimeters_file <- 'data/input/fires/ca_2020_fires.shp'
+fire_perimeters_file <- 'data/input/fires/august_complex.shp'
 burn_severity_file <- 'data/raw/fire/burn_severity.tif'
 plot_crs <- 'EPSG:4326'
 

@@ -31,7 +31,7 @@ if (!file.exists(file.path(ca_boundary_folder, 'ca_counties.shp'))) {
 }
 
 
-## ------------------------------- Get 2020 Fires ------------------------------ ##
+## ------------------------------- Get Study Area ------------------------------ ##
 ca_2020_fires <- st_read(mtbs_shp) %>%
   filter(year(Ig_Date) == 2020) %>%
   vect() %>%
@@ -39,7 +39,7 @@ ca_2020_fires <- st_read(mtbs_shp) %>%
   mask(ca) %>%
   st_as_sf()
 
-fires2study <- c('CREEK', 'AUGUST COMPLEX', 'NORTH COMPLEX')
+fires2study <- 'AUGUST COMPLEX'
 fires2write <- ca_2020_fires %>%
   # filter(BurnBndAc > 200000) %>%  # filter for large fires only (200k acres = 80k ha)
   filter(Incid_Name %in% fires2study) %>%
@@ -52,4 +52,4 @@ fires2write <- ca_2020_fires %>%
   ungroup()
 st_bbox(fires2write)
 
-st_write(fires2write, file.path(fire_out_folder, 'ca_2020_fires.shp'), delete_dsn = TRUE)
+st_write(fires2write, file.path(fire_out_folder, 'august_complex.shp'), delete_dsn = TRUE)

@@ -5,7 +5,7 @@ library(sf)
 
 # ------------------------------------ Paths ----------------------------------- #
 gedi_folder          <- 'data/input/gedi'
-fire_perimeters_file <- 'data/input/fires/ca_2020_fires.shp'
+fire_perimeters_file <- 'data/input/fires/august_comlex.shp'
 burn_severity_file   <- 'data/raw/fire/burn_severity.tif'
 output_folder        <- 'data/intermediate'
 
