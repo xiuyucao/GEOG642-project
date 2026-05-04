@@ -1,9 +1,15 @@
+# Raw GEDI were downloaded and pre-subsetted to study area from Earthdata Search
+# The data were then subsetted to interested attributes using Python
+# Python code: https://github.com/xiuyucao/gedi/blob/main/notebooks/get_ca_august_complex.ipynb
+# Pre-fire: Jun 1 - Oct 1, 2019
+# Post-fire: June 1 - Oct 1, 2021
+# Growth/recovery: June 1 - Oct 1, 2021
 library(tidyverse)
 library(sf)
 
 
 # ------------------------------------ Paths ----------------------------------- #
-# GEDI folder and take a look at the files inside
+# GEDI folder and CSV files to read
 gedi_folder <- 'data/raw/gedi'
 gedi_files <- list.files(gedi_folder, full.names=T)
 gedi_files <- gedi_files[grepl('.csv$', gedi_files)]
@@ -20,6 +26,7 @@ get_l2_shots <- function(gedi_folder, time = '0', write_shp = FALSE){
   
   path2file <- file.path(gedi_folder, paste0('gedi_l2b_', time, '.csv'))
   l2_shots <- read.csv(path2file, colClasses = c(shot_number = 'character')) %>%
+    # Apply quality filters
     filter(l2a_quality_flag == 1, 
            l2b_quality_flag == 1,
            algorithmrun_flag == 1,
@@ -80,7 +87,6 @@ get_l2a <- function(gedi_folder, shots2use, time = '0'){
   
   output
 }
-
 
 get_l2b <- function(gedi_folder, shots2use, time = '0'){
   time <- match.arg(time, c('0', '1', '2'))

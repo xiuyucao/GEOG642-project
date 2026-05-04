@@ -54,3 +54,5 @@ rsconnect/
 # Data
 data/raw
 data/temp
+
+.positai
