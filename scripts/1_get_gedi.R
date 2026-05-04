@@ -1,9 +1,9 @@
 # Raw GEDI were downloaded and pre-subsetted to study area from Earthdata Search
 # The data were then subsetted to interested attributes using Python
 # Python code: https://github.com/xiuyucao/gedi/blob/main/notebooks/get_ca_august_complex.ipynb
-# Pre-fire: Jun 1 - Oct 1, 2019
-# Post-fire: June 1 - Oct 1, 2021
-# Growth/recovery: June 1 - Oct 1, 2021
+# Pre-fire (0): Jun 1 - Oct 1, 2019
+# Post-fire (1): June 1 - Oct 1, 2021
+# Growth/recovery (2): June 1 - Oct 1, 2021
 library(tidyverse)
 library(sf)
 
@@ -115,10 +115,10 @@ get_l4a <- function(gedi_folder, l2_shots2use, time = '0'){
   output <- l2_shots2use %>%
     left_join(l4a, by = 'shot_number') %>%
     filter(algorithm_run_flag == 1,
-           agbd != -9999,
+           agbd >= 0,
            l4_quality_flag == 1,
            lcd_landsat_water_persistence < 10) %>%
-    filter(lcd_pft_class %in% c(1, 2, 3, 4, 5, 9)) %>%
+    filter(lcd_pft_class %in% c(1, 2, 3, 4, 5, 6, 11)) %>%
     select(shot_number, agbd, agbd_pi_lower, agbd_pi_upper, agbd_se, lat, lon, elev_lowestmode)
   
   output
