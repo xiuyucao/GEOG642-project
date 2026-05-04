@@ -3,7 +3,7 @@
 # Python code: https://github.com/xiuyucao/gedi/blob/main/notebooks/get_ca_august_complex.ipynb
 # Pre-fire (0): Jun 1 - Oct 1, 2019
 # Post-fire (1): June 1 - Oct 1, 2021
-# Growth/recovery (2): June 1 - Oct 1, 2021
+# Growth/recovery (2): June 1 - Oct 1, 2024 and 2025
 library(tidyverse)
 library(sf)
 
@@ -137,4 +137,24 @@ for (t in c('0', '1', '2')) {
   
   write_rds(l2, file.path(out_folder, paste0('gedi_l2_', t, '.rds')), compress = 'xz')
   write_rds(l4a, file.path(out_folder, paste0('gedi_l4a_', t, '.rds')), compress = 'xz')
+}
+
+
+# ---------------------------------- Filter summary
+for (t in c('0', '1', '2')) {
+  message(paste0('\n===== Time period ', t, ' ====='))
+  
+  # L2: raw vs filtered
+  raw_l2b <- read.csv(file.path(gedi_folder, paste0('gedi_l2b_', t, '.csv')),
+                      colClasses = c(shot_number = 'character'))
+  l2_filtered <- read_rds(file.path(out_folder, paste0('gedi_l2_', t, '.rds')))
+  message(paste0('L2 shots BEFORE filter: ', nrow(raw_l2b)))
+  message(paste0('L2 shots AFTER filter:  ', nrow(l2_filtered)))
+  
+  # L4A: raw vs filtered
+  raw_l4a <- read.csv(file.path(gedi_folder, paste0('gedi_l4a_', t, '.csv')),
+                      colClasses = c(shot_number = 'character'))
+  l4a_filtered <- read_rds(file.path(out_folder, paste0('gedi_l4a_', t, '.rds')))
+  message(paste0('L4A shots BEFORE filter: ', nrow(raw_l4a)))
+  message(paste0('L4A shots AFTER filter:  ', nrow(l4a_filtered)))
 }
