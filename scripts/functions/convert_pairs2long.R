@@ -4,7 +4,7 @@
 convert_pairs2long <- function(pairs, var, zscore = FALSE,
                                downsample = FALSE, seed = 123,
                                time1 = '0', time2 = '1',
-                               treatment_col = "zone",
+                               treatment_col = "zone", control_level = 'control',  # make sure control is the 1st level
                                x_prefix = "x", y_prefix = "y"){
   var1 <- paste0(var, '_', time1)
   var2 <- paste0(var, '_', time2)
@@ -28,7 +28,8 @@ convert_pairs2long <- function(pairs, var, zscore = FALSE,
                  names_to = c(".value", "time"), names_pattern = paste0("(.+)_(", time1, "|", time2, ")$")) %>%
     rename(value = all_of(var)) %>%
     mutate(time = factor(time, levels = c(time1, time2)),
-           treatment = factor(.data[[treatment_col]])) %>%
+           treatment = factor(.data[[treatment_col]],  # Make sure control_level is the first factor level
+                              levels = c(control_level,setdiff(unique(.data[[treatment_col]]), control_level)))) %>%
     select(index, value, time, treatment, x, y)
   
   if(zscore){
