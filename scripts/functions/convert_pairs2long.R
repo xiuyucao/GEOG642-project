@@ -2,6 +2,7 @@
 # pairs is the GEDI pairs data I produced
 # var is the variable name without time suffix (e.g., 'rh98')
 convert_pairs2long <- function(pairs, var, zscore = FALSE,
+                               downsample = FALSE, seed = 123,
                                time1 = '0', time2 = '1',
                                treatment_col = "zone",
                                x_prefix = "x", y_prefix = "y"){
@@ -34,6 +35,29 @@ convert_pairs2long <- function(pairs, var, zscore = FALSE,
     pairs_long <- pairs_long %>%
       mutate(value_raw = value,
              value = as.numeric(scale(value)))
+  }
+  
+  # Downsample so treatment groups have equal numbers of pairs.
+  # Operates at the pair (index) level so both pre/post rows stay together.
+  if (downsample) {
+    set.seed(seed)
+    
+    # one row per pair, carrying its treatment label
+    pair_treatment <- pairs_long %>%
+      distinct(index, treatment)
+    
+    # smallest group size
+    n_min <- min(table(pair_treatment$treatment))
+    
+    # sample n_min pairs per treatment group
+    sampled_indices <- pair_treatment %>%
+      group_by(treatment) %>%
+      slice_sample(n = n_min) %>%
+      ungroup() %>%
+      pull(index)
+    
+    pairs_long <- pairs_long %>%
+      filter(index %in% sampled_indices)
   }
   
   pairs_long
