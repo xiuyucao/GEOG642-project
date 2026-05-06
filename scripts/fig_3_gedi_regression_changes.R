@@ -58,9 +58,10 @@ plot_effects <- function(effects_df, title='', subtitle='') {
     geom_vline(xintercept = 0, linetype = "dashed", color = "grey40") +
     geom_pointrange(data=effects_df, aes(x = estimate, y = metric, color = effect, xmin = conf.low, xmax = conf.high),
                     position = position_dodge(width = 0.2),
-                    size = 0.4, linewidth = 0.7) +
+                    size = 0.2, linewidth = 0.4) +
     scale_color_manual(values = c("Burned" = "#E69F00", "Timing" = "#009E73", "Interaction" = "#56B4E9")) +
     scale_y_discrete(limits = rev) +
+    coord_cartesian(xlim = c(-0.7, 0.7)) +
     labs(x = 'Normalized effect (95% CIs)', y = '', color= '',
          title = title, subtitle = subtitle) +
     theme(legend.position = "bottom", panel.grid.major.y = element_blank())
@@ -82,5 +83,4 @@ fig_recover <- plot_effects(res_recover)
 fig <- ggarrange(fig_fire, fig_recover,
                  ncol=2,labels=c('(a)', '(b)'),
                  common.legend = TRUE, legend = 'bottom')
-ggsave('figures/fig3_gedi_changes.png', fig, width = 9, height = 10, bg = 'white')
-
+ggsave('figures/fig3_gedi_changes.png', fig, width = 6, height = 7, bg = 'white')
