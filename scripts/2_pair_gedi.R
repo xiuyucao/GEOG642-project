@@ -17,6 +17,7 @@ load_gedi <- function(prefix) {
     read_rds(file.path(gedi_folder, paste0(prefix, t, '.rds'))) %>%
       st_as_sf(coords = c('lon', 'lat'), crs = 4326) %>%
       st_transform(crs = 5070) %>%
+      mutate(x = st_coordinates(.)[, 1], y = st_coordinates(.)[, 2]) %>%
       filter(as.vector(st_within(., fire_buffer, sparse = FALSE)))
   }) %>% setNames(c('0', '1', '2'))
 }
@@ -46,7 +47,8 @@ join_pair_attrs <- function(pairs, sf_a, sf_b, time_a, time_b) {
   pairs %>%
     left_join(attrs_a, by = c('shot_a' = 'shot_number')) %>%
     left_join(attrs_b, by = c('shot_b' = 'shot_number')) %>%
-    mutate(x = mean_coords[, 1], y = mean_coords[, 2]) %>%
+    mutate(x = (.data[[paste0('x_', time_a)]] + .data[[paste0('x_', time_b)]]) / 2,
+           y = (.data[[paste0('y_', time_a)]] + .data[[paste0('y_', time_b)]]) / 2) %>%
     st_as_sf(coords = c('x', 'y'), crs = 5070)
 }
 
