@@ -1,7 +1,7 @@
 # Convert GEDI pairs data from wide format to long format
 # pairs is the GEDI pairs data I produced
 # var is the variable name without time suffix (e.g., 'rh98')
-convert_pairs2long <- function(pairs, var,
+convert_pairs2long <- function(pairs, var, zscore = FALSE,
                                time1 = '0', time2 = '1',
                                treatment_col = "zone",
                                x_prefix = "x", y_prefix = "y"){
@@ -29,6 +29,12 @@ convert_pairs2long <- function(pairs, var,
     mutate(time = factor(time, levels = c(time1, time2)),
            treatment = factor(.data[[treatment_col]])) %>%
     select(index, value, time, treatment, x, y)
+  
+  if(zscore){
+    pairs_long <- pairs_long %>%
+      mutate(value_raw = value,
+             value = as.numeric(scale(value)))
+  }
   
   pairs_long
 }
