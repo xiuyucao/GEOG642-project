@@ -5,7 +5,7 @@ library(sf)
 
 # ------------------------------------ Paths ----------------------------------- #
 gedi_folder          <- 'data/input/gedi'
-fire_perimeters_file <- 'data/input/fires/august_comlex.shp'
+fire_perimeters_file <- 'data/input/fires/august_complex.shp'
 burn_severity_file   <- 'data/raw/fire/burn_severity.tif'
 output_folder        <- 'data/intermediate'
 
@@ -90,13 +90,13 @@ for (combo in list(c('0', '1'), c('1', '2'), c('0', '2'))) {
   suffix <- paste0(t_a, t_b)
   
   # L2 pairs
-  get_pairs(l2_sf[[t_a]], l2_sf[[t_b]]) %>%
+  get_pairs(l2_sf[[t_a]], l2_sf[[t_b]], max_dist = 45, max_elev_diff = 10) %>%
     join_pair_attrs(l2_sf[[t_a]], l2_sf[[t_b]], t_a, t_b) %>%
     add_fire_attrs(fire, control, burn_severity_binary) %>%
     write_rds(file.path(output_folder, paste0('l2_pairs_', suffix, '.rds')))
   
   # L4A pairs
-  get_pairs(l4a_sf[[t_a]], l4a_sf[[t_b]]) %>%
+  get_pairs(l4a_sf[[t_a]], l4a_sf[[t_b]], max_dist = 45, max_elev_diff = 10) %>%
     join_pair_attrs(l4a_sf[[t_a]], l4a_sf[[t_b]], t_a, t_b) %>%
     add_fire_attrs(fire, control, burn_severity_binary) %>%
     write_rds(file.path(output_folder, paste0('l4a_pairs_', suffix, '.rds')))
