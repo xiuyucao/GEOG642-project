@@ -59,7 +59,7 @@ plot_effects <- function(effects_df, title='', subtitle='') {
     geom_pointrange(data=effects_df, aes(x = estimate, y = metric, color = effect, xmin = conf.low, xmax = conf.high),
                     position = position_dodge(width = 0.2),
                     size = 0.2, linewidth = 0.4) +
-    scale_color_manual(values = c("Burned" = "#E69F00", "Timing" = "#009E73", "Interaction" = "#56B4E9")) +
+    scale_color_manual(values = c("Burned" = "brown3", "Timing" = "forestgreen", "Interaction" = "dodgerblue3")) +
     scale_y_discrete(limits = rev) +
     coord_cartesian(xlim = c(-0.7, 0.7)) +
     labs(x = 'Normalized effect (95% CIs)', y = '', color= '',
